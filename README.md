@@ -4,9 +4,12 @@ MAKE SOME LOVE WITH LÖVE MAKER
 
 A simple one-click .exe maker for your LÖVE games!
 
-How-to - (Windows only so far)
-------------------------------
+Setup
+-----
+The current setup only takes lua files from one directory, and that directory is defined in the script as "./src" in relation to your project root directory. If you wish to change this, open the "make (windows).sh" inside a text editor, find where the variable "SRC_DIR" is defined (line 17), and change the path to your liking. Feel free to also change "BIN_DIR" and "PROJ_NAME" as you see fit.
 
+How-to (Windows only so far)
+----------------------------
 To build your LÖVE game executable, place this folder into the top of your project tree then run the "make (windows).sh" file!
 
 Before running the make script, it may be necessary to open it in a text editor and modify the source and binaries location variables.
