@@ -10,8 +10,8 @@ The current setup only takes lua files from one directory, and that directory is
 
 How-to (Windows only so far)
 ----------------------------
-To build your LÖVE game executable, place this folder into the top of your project tree then run the "make (windows).sh" file!
+Before running the script, it may be necessary to modify the source directory path. See "Setup" above, if you haven't already.
 
-Before running the make script, it may be necessary to open it in a text editor and modify the source and binaries location variables.
+To build your LÖVE game executable, place this folder into the top of your project tree then run the "make (windows).sh" file!
 
 Also, to make things easier for you and not invade your personal code bubble, I've made this all work from this directory, however, for ease of use, you may want to create a shortcut to the "make (windows).sh" file and place that wherever you'd like.
