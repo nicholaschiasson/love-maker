@@ -1,5 +1,26 @@
 #!/bin/bash
 
+os=""
+
+case "$OSTYPE" in
+  bsd*)     os="bsd" ;;
+  cygwin*)  os="win" ;;
+  darwin*)  os="mac" ;;
+  freebsd*) os="bsd" ;;
+  linux*)   os="linux" ;;
+  msys*)    os="win" ;;
+  solaris*) os="solaris" ;;
+  win32*)   os="win" ;;
+  *)        os="unknown" ;;
+esac
+
+echo "OSTYPE: $os"
+
+if [ $os == "unknown" ]; then
+  read
+  exit
+fi
+
 PATH_ARR=$(echo $(pwd) | tr "/" "\n")
 
 # Finding the directory name for ../
@@ -48,3 +69,7 @@ rm $PROJ_NAME.love
 
 # Copying dll files
 cp $LOVE_ESS/*.dll $BIN_DIR
+
+echo
+echo "Press enter to exit."
+read
