@@ -53,7 +53,7 @@ if [ $os == "win" ]; then
 
   # Changing the zip file extentions to love
   mv $PROJ_NAME.zip $PROJ_NAME.love
-  
+
   # Making the binaries directory
   ARR=$(echo $BIN_DIR | tr "/" "\n")
   CURR_DIR=
@@ -64,7 +64,7 @@ if [ $os == "win" ]; then
       mkdir $CURR_DIR
     fi
   done
-  
+
   # Making the executable
   if [ ! -e $OUT_PRODUCT ]; then
     touch $OUT_PRODUCT
@@ -80,7 +80,7 @@ elif [ $os == "mac" ]; then
 
   # Making the Project zip
   zip -9 -q -r $PROJ_NAME.love $SRC_DIR
-  
+
   # Making the binaries directory
   ARR=$(echo $BIN_DIR | tr "/" "\n")
   CURR_DIR=
@@ -91,7 +91,7 @@ elif [ $os == "mac" ]; then
       mkdir $CURR_DIR
     fi
   done
-  
+
   echo "Unimplemented."
   read
   exit
@@ -101,7 +101,7 @@ elif [ $os == "linux" ]; then
 
   # Making the Project zip
   zip -9 -q -r $PROJ_NAME.love $SRC_DIR
-  
+
   # Making the binaries directory
   ARR=$(echo $BIN_DIR | tr "/" "\n")
   CURR_DIR=
@@ -112,7 +112,7 @@ elif [ $os == "linux" ]; then
       mkdir $CURR_DIR
     fi
   done
-  
+
   # Making the executable
   if [ ! -e $OUT_PRODUCT ]; then
     touch $OUT_PRODUCT
