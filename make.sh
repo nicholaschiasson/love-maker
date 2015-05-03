@@ -22,7 +22,7 @@ echo "  (1) Windows 64-bit"
 echo "  (2) Windows 32-bit"
 echo "  (3) Mac OS X"
 echo "  (4) Linux"
-echo "  (Enter) Current Platform"
+echo "  (Default) Current Platform"
 
 choice="-1"
 while [ $choice != "0" ] && [ $choice != "1" ] && [ $choice != "2" ] &&
@@ -44,6 +44,7 @@ if [ ! -z $choice ]; then
     echo "Building distribution for Windows 32-bit."
   elif [ $choice == "3" ]; then
     os="mac"
+    arch="x86_64"
     echo "Building distribution for Mac OS X."
   elif [ $choice == "4" ]; then
     os="linux"
@@ -76,7 +77,10 @@ if [ -e $BIN_DIR ]; then
   choice="-1"
   echo "A distribution for this platform already exists."
   while [ $choice != "y" ] && [ $choice != "n" ]; do
-    read -p "Would you like to clean? (y/n): " choice
+    read -p "Would you like to clean? (default y/n): " choice
+    if [ -z $choice ]; then
+      choice="y"
+    fi
   done
   if [ $choice == "y" ]; then
     rm -rf $BIN_DIR
@@ -86,7 +90,10 @@ fi
 choice="-1"
 echo "Build will start."
 while [ $choice != "y" ] && [ $choice != "n" ]; do
-  read -p "Do you want to continue? (y/n): " choice
+  read -p "Do you want to continue? (default y/n): " choice
+  if [ -z $choice ]; then
+    choice="y"
+  fi
 done
 if [ $choice == "n" ]; then
   exit
@@ -125,11 +132,16 @@ if [ $os == "win" ]; then
   # Copying dll files
   cp $LOVE_ESS/*.dll $BIN_DIR
 elif [ $os == "mac" ]; then
+  COM_NAME=""
+  while [ -z $COM_NAME ]; do
+    read -p "Enter a company name: " COM_NAME
+  done
   LOVE_ESS=macosx
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME.app
 
   # Making the Project zip
-  zip -9 -q -r $PROJ_NAME.love $SRC_DIR
+  #zip -9 -q -r $PROJ_NAME.love $SRC_DIR
+  7za a -tzip $PROJ_NAME.love $SRC_DIR/*.lua
 
   # Making the binaries directory
   ARR=$(echo $BIN_DIR | tr "/" "\n")
@@ -143,8 +155,23 @@ elif [ $os == "mac" ]; then
   done
 
   cp -r $LOVE_ESS/love.app $OUT_PRODUCT
+  cp -r $PROJ_NAME.love $OUT_PRODUCT/Contents/Resources/
 
-  echo "Unimplemented."
+  INFOPLIST=$OUT_PRODUCT/Contents/Info.plist
+
+  OLDBIDENT="<string>org.love2d.love<\/string>"
+  NEWBIDENT="<string>com.$COM_NAME.$PROJ_NAME<\/string>"
+  sed -i 's/'"$OLDBIDENT"'/'"$NEWBIDENT"'/g' $INFOPLIST
+
+  OLDBNAME="<string>LÖVE<\/string>"
+  NEWBNAME="<string>$PROJ_NAME<\/string>"
+  sed -i 's/'"$OLDBNAME"'/'"$NEWBNAME"'/g' $INFOPLIST
+
+  TOREMOVE="\t<key>UTExportedTypeDeclarations<\/key>"
+  ENDFILE="<\/dict>\n<\/plist>CUTHERE\n"
+  sed -i 's/'"$TOREMOVE"'/'"$ENDFILE"'/g' $INFOPLIST
+  TEMP=`cat $INFOPLIST`
+  echo "${TEMP%%'CUTHERE'*}" > $INFOPLIST
 elif [ $os == "linux" ]; then
   LOVE_ESS=linux
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME
