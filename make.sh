@@ -77,12 +77,12 @@ if [ -e $BIN_DIR ]; then
   choice="-1"
   echo "A distribution for this platform already exists."
   while [ $choice != "y" ] && [ $choice != "n" ]; do
-    read -p "Would you like to clean? (default y/n): " choice
+    read -p "Would you like to update it (y) or clean and update (n)? (default y/n): " choice
     if [ -z $choice ]; then
       choice="y"
     fi
   done
-  if [ $choice == "y" ]; then
+  if [ $choice == "n" ]; then
     rm -rf $BIN_DIR
   fi
 fi
@@ -140,8 +140,7 @@ elif [ $os == "mac" ]; then
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME.app
 
   # Making the Project zip
-  #zip -9 -q -r $PROJ_NAME.love $SRC_DIR
-  7za a -tzip $PROJ_NAME.love $SRC_DIR/*.lua
+  zip -9 -q -r $PROJ_NAME.love $SRC_DIR
 
   # Making the binaries directory
   ARR=$(echo $BIN_DIR | tr "/" "\n")
@@ -190,12 +189,16 @@ elif [ $os == "linux" ]; then
     fi
   done
 
+## Not for linux you dough head
   # Making the executable
-  if [ ! -e $OUT_PRODUCT ]; then
-    touch $OUT_PRODUCT
-  fi
+#  if [ ! -e $OUT_PRODUCT ]; then
+#    touch $OUT_PRODUCT
+#  fi
 
-  cat $LOVE_ESS/love.exe $PROJ_NAME.love > $OUT_PRODUCT
+#  cat $LOVE_ESS/love.exe $PROJ_NAME.love > $OUT_PRODUCT
+
+## Temp linux fix
+  cp $PROJ_NAME.love $BIN_DIR
 else
   echo "Unsupported platform."
   echo "Exiting."
