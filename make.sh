@@ -13,6 +13,7 @@ case "$OSTYPE" in
   *)        os="unknown" ;;
 esac
 
+myos=$os
 echo "OSTYPE: $OSTYPE ($os)"
 
 echo "ARCHITECTURE: $arch"
@@ -109,7 +110,11 @@ if [ $os == "win" ]; then
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME.exe
 
   # Making the Project zip/love file
-  7za a -tzip $PROJ_NAME.love $SRC_DIR/*.lua
+  if [ $myos == "win" ]; then
+    7za a -tzip $PROJ_NAME.love $SRC_DIR/*.lua
+  else
+    zip -9 -q -r $PROJ_NAME.love $SRC_DIR
+  fi
 
   # Making the binaries directory
   ARR=$(echo $BIN_DIR | tr "/" "\n")
@@ -140,7 +145,11 @@ elif [ $os == "mac" ]; then
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME.app
 
   # Making the Project zip
-  zip -9 -q -r $PROJ_NAME.love $SRC_DIR
+  if [ $myos == "win" ]; then
+    7za a -tzip $PROJ_NAME.love $SRC_DIR/*.lua
+  else
+    zip -9 -q -r $PROJ_NAME.love $SRC_DIR
+  fi
 
   # Making the binaries directory
   ARR=$(echo $BIN_DIR | tr "/" "\n")
@@ -176,7 +185,11 @@ elif [ $os == "linux" ]; then
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME
 
   # Making the Project zip
-  zip -9 -q -r $PROJ_NAME.love $SRC_DIR
+  if [ $myos == "win" ]; then
+    7za a -tzip $PROJ_NAME.love $SRC_DIR/*.lua
+  else
+    zip -9 -q -r $PROJ_NAME.love $SRC_DIR
+  fi
 
   # Making the binaries directory
   ARR=$(echo $BIN_DIR | tr "/" "\n")
