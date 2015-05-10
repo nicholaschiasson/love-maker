@@ -111,9 +111,9 @@ if [ $os == "win" ]; then
 
   # Making the Project zip/love file
   if [ $myos == "win" ]; then
-    7za a -tzip $PROJ_NAME.love $SRC_DIR/*.lua
+    7za a -r -tzip $PROJ_NAME.love $SRC_DIR/*
   else
-    zip -9 -q -r $PROJ_NAME.love $SRC_DIR
+    zip -9 -q -r $PROJ_NAME.love $SRC_DIR/*
   fi
 
   # Making the binaries directory
@@ -146,9 +146,9 @@ elif [ $os == "mac" ]; then
 
   # Making the Project zip
   if [ $myos == "win" ]; then
-    7za a -tzip $PROJ_NAME.love $SRC_DIR/*.lua
+    7za a -r -tzip $PROJ_NAME.love $SRC_DIR/*
   else
-    zip -9 -q -r $PROJ_NAME.love $SRC_DIR
+    zip -9 -q -r $PROJ_NAME.love $SRC_DIR/*
   fi
 
   # Making the binaries directory
@@ -186,9 +186,9 @@ elif [ $os == "linux" ]; then
 
   # Making the Project zip
   if [ $myos == "win" ]; then
-    7za a -tzip $PROJ_NAME.love $SRC_DIR/*.lua
+    7za a -r -tzip $PROJ_NAME.love $SRC_DIR/*
   else
-    zip -9 -q -r $PROJ_NAME.love $SRC_DIR
+    zip -9 -q -r $PROJ_NAME.love $SRC_DIR/*
   fi
 
   # Making the binaries directory
