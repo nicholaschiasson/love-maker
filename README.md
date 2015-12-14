@@ -12,7 +12,7 @@ How-to
 ------
 Before running the script, it may be necessary to modify the source directory path. See "Setup" above, if you haven't already.
 
-To build your distributable LÖVE game, place this folder into the top of your project tree then run either the "make.sh" file or the "make (windows).sh" if you are on a windows machine!
+To build your distributable LÖVE game, place this folder into the top of your project tree then run either the "make.sh" file or the "make (windows).bat" if you are on a windows machine!
 
 Also, to make things easier for you and not invade your personal code bubble, I've made this all work from this directory, however, for ease of use, you may want to create a shortcut to the "make.sh" file and place that wherever you'd like.
 
