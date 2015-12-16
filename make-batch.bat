@@ -62,7 +62,30 @@ if not %choice%==-1 (
 )
 echo.
 
+set currentdir=%~p0
+set currentdir=%currentdir: =:%
+set currentdir=%currentdir:\= %
+call :get_current_and_parent_dir %currentdir%
+set parentdir=%parentdir::= %
+set currentdir=%currentdir::= %
+
+set PROJ_ROOT=..
+set PROJ_NAME=%parentdir%
+set SRC_DIR=%PROJ_ROOT%\src
+set BIN_DIR=%PROJ_ROOT%\bin\%targetos%-%arch%
+
 echo // TODO
 
 echo.
 set /p exitvar=Press enter to exit.
+exit
+
+::Sub Routines
+
+:get_current_and_parent_dir
+if not "%~1" EQU "" (
+  set parentdir=%currentdir%
+  set currentdir=%~1
+  shift
+  goto get_current_and_parent_dir
+) else goto :EOF

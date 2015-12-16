@@ -111,7 +111,7 @@ if [ $os == "win" ]; then
 
   # Making the Project zip/love file
   if [ $myos == "win" ]; then
-	powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('$SRC_DIR/', '$PROJ_NAME.love'); }"
+    powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('$SRC_DIR/', '$PROJ_NAME.love'); }"
   else
     zip -9 -q -r $PROJ_NAME.love $SRC_DIR/*
   fi
