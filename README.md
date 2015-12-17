@@ -1,28 +1,33 @@
 love-maker
 ==========
-MAKE SOME LOVE WITH LÖVE MAKER
+MAKE SOME LÖVE WITH LOVE MAKER
 
 A simple distribution building script for your LÖVE games!
 
 Setup
 -----
-Drop this project folder under the root directory of your LÖVE project. Make sure that all of your code and resources are inside a directory named "src" under the root directory. If you'd prefer another place, you'll need to modify the "SRC_DIR" variable inside the "make.sh" file in this project (not too much trouble). Feel free to also change "BIN_DIR" and "PROJ_NAME" as you see fit. By default, "BIN_DIR" is in a folder named "bin" under the project root and "PROJ_NAME" is just the name of the root directory.
+- Drop this project folder under the root directory of your LÖVE project.
+- Make sure that all of your code and resources are inside a directory named "src" under the root directory.
+- Make sure that the root directory of your project uses the actual name of your project.
+- Make sure that you are able to run bash scripts on your machine if you're on anything but Windows or powershell scripts if you are on Windows.
+- If the project is under a git repository, make sure to add "love-maker/" to your .gitignore file as well as "bin/" if you haven't already.
 
 How-to
 ------
-Before running the script, it may be necessary to modify the source directory path. See "Setup" above, if you haven't already.
+After having followed the appropriate setup requirements detailed above, to build your distributable LÖVE game, just run the love-maker.bat file if you are on Windows or the love-maker.sh file if you are on any other system.
 
-To build your distributable LÖVE game, place this folder into the top of your project tree then run either the "make.sh" file or the "make (windows).bat" if you are on a windows machine!
+The scripts prompt the user for some very basic things:
+- What platform you want to build the distribution for
+  - Options are Windows 64-bit, Windows 32-bit, Mac OS X, and Linux (not implemented yet)
+  - Defaults to your running platform
+- If a binaries folder already exists for the selected platform, whether you would like to simply update its build or clean and update
+  - Clean removes the actual directory, so it's nice to use sometimes
+  - Defaults to simple update
 
-Also, to make things easier for you and not invade your personal code bubble, I've made this all work from this directory, however, for ease of use, you may want to create a shortcut to the "make.sh" file and place that wherever you'd like.
-
-Updates
--------
-- As I don't have a Mac machine, I can't test on it, however, EVERYTHING SHOULD WORK NOW FOR MAC OS X! HURRAY! Building on a Linux distro was left last (and is still unimplemented) due to apparent complexity.
-  - May 4, 2015
+If you will be using these scripts for regular compiling while developing (that's what I do) and ALSO aren't in the habit of using a terminal, you may want to copy a shortcut of the script you are using into the binaries directory (or just use a terminal, you lazy ass).
 
 TODO
 ----
+- Configuration file for SCR_DIR, BIN_DIR, PROJ_NAME, BUILD_MODE, and various other variables
 - Implement Linux distribution
-- Add options for custom project name, source dir, binary dir...
 - Have script copy a shortcut of the script into the bin folder.
