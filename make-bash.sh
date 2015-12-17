@@ -26,12 +26,9 @@ echo "  (4) Linux"
 echo "  (Default) Current Platform"
 
 choice="-1"
-while [ $choice != "0" ] && [ $choice != "1" ] && [ $choice != "2" ] &&
-  [ $choice != "3" ] && [ $choice != "4" ]; do
+while [ ! -z $choice ] && [ $choice != "0" ] && [ $choice != "1" ] &&
+  [ $choice != "2" ] && [ $choice != "3" ] && [ $choice != "4" ]; do
   read -p "Select desired platform (0 to exit): " choice
-  if [ -z $choice ]; then
-    break
-  fi
 done
 
 if [ ! -z $choice ]; then
