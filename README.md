@@ -30,3 +30,4 @@ If you will be using these scripts for regular compiling while developing (that'
 - Configuration file for SCR_DIR, BIN_DIR, PROJ_NAME, BUILD_MODE, and various other variables
 - Implement Linux distribution
 - Have script copy a shortcut of the script into the bin folder.
+- Don't require to include the Love2D framework in THIS project... download it on first use or something, and check for updates on each use perhaps.
