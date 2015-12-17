@@ -106,6 +106,9 @@ if [ $os == "win" ]; then
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME.exe
 
   # Making the Project zip/love file
+  if [ -e $PROJ_NAME.love ]; then
+    rm -f $PROJ_NAME.love
+  fi
   if [ $myos == "win" ]; then
     powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('$SRC_DIR/', '$PROJ_NAME.love'); }"
   else
@@ -141,6 +144,9 @@ elif [ $os == "mac" ]; then
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME.app
 
   # Making the Project zip
+  if [ -e $PROJ_NAME.love ]; then
+    rm -f $PROJ_NAME.love
+  fi
   if [ $myos == "win" ]; then
     powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('$SRC_DIR/', '$PROJ_NAME.love'); }"
   else
@@ -181,6 +187,9 @@ elif [ $os == "linux" ]; then
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME
 
   # Making the Project zip
+  if [ -e $PROJ_NAME.love ]; then
+    rm -f $PROJ_NAME.love
+  fi
   if [ $myos == "win" ]; then
     powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('$SRC_DIR/', '$PROJ_NAME.love'); }"
   else

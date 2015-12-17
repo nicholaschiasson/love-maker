@@ -101,10 +101,10 @@ if ($parentPath)
 
 $PROJ_ROOT = ".."
 $PROJ_NAME = $parentDir
-$SRC_DIR = $PROJ_ROOT + "/src"
-$BIN_DIR = $PROJ_ROOT + "/bin/" + $targetos + "-" + $arch
+$SRC_DIR = $PROJ_ROOT + "\src"
+$BIN_DIR = $PROJ_ROOT + "\bin\" + $targetos + "-" + $arch
 
-# If a bin directory for the target platform exists, ask to either update or clean.
+## If a bin directory for the target platform exists, ask to either update or clean.
 if (test-path -path $BIN_DIR)
 {
   $choice = "-1"
@@ -119,7 +119,7 @@ if (test-path -path $BIN_DIR)
   }
 }
 
-# Ask if we should still go forward with the build.
+## Ask if we should still go forward with the build.
 $choice = "-1"
 echo "Build will start."
 while ($choice -and $choice -ne "y" -and $choice -ne "n")
@@ -131,13 +131,65 @@ if ($choice -eq "n")
   return
 }
 
-# Creating bin directory in case it doesn't exist.
-if (!(test-path -path $BIN_DIR))
+if ($targetos -eq "win")
 {
-    new-item -itemtype directory -path $BIN_DIR > $null
+  if ($arch -eq "x86_64")
+  {
+    $LOVE_ESS = "win64"
+  }
+  else
+  {
+    $LOVE_ESS = "win32"
+  }
+  $OUT_PRODUCT = $BIN_DIR + "\" + $PROJ_NAME + ".exe"
+
+  ## Making the Project zip/love file
+  if (test-path ($PROJ_NAME + ".love"))
+  {
+    rm ($PROJ_NAME + ".love")
+  }
+  Add-Type -A 'System.IO.Compression.FileSystem'
+  [IO.Compression.ZipFile]::CreateFromDirectory($SRC_DIR + "\", $PROJ_NAME + ".love")
+
+  ## Making the binaries directory
+  if (!(test-path -path $BIN_DIR))
+  {
+      new-item -itemtype directory -path $BIN_DIR > $null
+  }
+
+  ## Making the executable
+  if (!(test-path $OUT_PRODUCT))
+  {
+    new-item -force $OUT_PRODUCT > $null
+  }
+
+  ## Merging the love executable with the love game
+  cmd /c "copy /b $LOVE_ESS\love.exe + $PROJ_NAME.love $OUT_PRODUCT" > $null
+
+  ## Copying libraries
+  cp ($LOVE_ESS + "\*.dll") $BIN_DIR
+}
+#######################################################
+elseif ($targetos -eq "mac")
+{
+}
+elseif ($targetos -eq "linux")
+{
+}
+#######################################################
+else
+{
+  echo "Unsupported platform."
+  write-host "Exiting." -nonewline
+  read-host
+  return
 }
 
+## Removing the love/zip file
+rm ($PROJ_NAME + ".love")
 
+## Copying license
+cp license.txt $BIN_DIR
 
 write-host "`nPress enter to exit." -nonewline
 read-host
