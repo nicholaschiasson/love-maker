@@ -1,3 +1,10 @@
+:: love-maker.bat (old)
+
+:: So I started making this script as the Windows version of the love-maker script.
+:: It was fun, but I soon just decided to go with powershell. It's much better that
+:: way. This script may be completed in the future.
+:: - December 16, 2015
+
 @echo OFF
 
 ::reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && set arch=x86 || set arch=x64

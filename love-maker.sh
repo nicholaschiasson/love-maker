@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# love-maker.sh
+
+## This file is intended for cross-platform use, so long as the
+## system is capable of running shell scripts.
+
 os=""
 arch=$(uname -m)
 

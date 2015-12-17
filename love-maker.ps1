@@ -1,10 +1,10 @@
 # love-maker.ps1
 
-## Get architecture
+## This file is only intended for use on Windows systems.
 
+## Get architecture
 ## Checking WMI
 #arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
-
 ## Using .NET
 #### Possibly more reliable in case running in virtual machine or emulator
 if ([System.Environment]::Is64BitProcess)
@@ -16,6 +16,8 @@ else
   $arch = "32-bit"
 }
 
+## Purpose for this conditional is because the first method above for getting
+## the system architecture returns as a string either "64-bit" or "32-bit"
 if ($arch -eq "64-bit")
 {
   $arch = "x86_64"
