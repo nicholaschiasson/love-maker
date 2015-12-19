@@ -2,6 +2,12 @@
 
 ## This file is only intended for use on Windows systems.
 
+## LOVE version - potentially read through config file and/or retrieved online
+$MAJOR = 0
+$MINOR = 9
+$BUILD = 2
+$URL = "https://bitbucket.org/rude/love/downloads/"
+
 ## Get architecture
 ## Checking WMI
 #arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
@@ -66,8 +72,8 @@ if ($choice)
   }
   elseif ($choice -eq "3")
   {
-    $targetos="mac"
-    $arch="x86_64"
+    $targetos="macosx"
+    $arch="x64"
     echo "Building distribution for Mac OS X."
   }
   elseif ($choice -eq "4")
@@ -146,36 +152,77 @@ if (test-path "$PROJ_NAME.love")
 Add-Type -A 'System.IO.Compression.FileSystem'
 [IO.Compression.ZipFile]::CreateFromDirectory("$SRC_DIR\", "$PROJ_NAME.love")
 
-## Performing platform specific operations
+## Setting platform specific names
 if ($targetos -eq "win")
 {
   if ($arch -eq "x86_64")
   {
-    $LOVE_ESS = "win64"
+    $LOVE_ESS = "love-$MAJOR.$MINOR.$BUILD-win64"
   }
   else
   {
-    $LOVE_ESS = "win32"
+    $LOVE_ESS = "love-$MAJOR.$MINOR.$BUILD-win32"
   }
   $OUT_PRODUCT = "$BIN_DIR\$PROJ_NAME.exe"
+}
+elseif ($targetos -eq "macosx")
+{
+  while (!$COM_NAME)
+  {
+    $COM_NAME = read-host "Enter a company name"
+  }
+  $LOVE_ESS = "love-$MAJOR.$MINOR.$BUILD-macosx-x64"
+  $OUT_PRODUCT = "$BIN_DIR\$PROJ_NAME.app"
+}
+elseif ($targetos -eq "linux")
+{
+  ## TODO: change for the sake of downloading the proper linux files
+  $LOVE_ESS = "linux"
+  $OUT_PRODUCT = "$BIN_DIR\$PROJ_NAME"
+}
+else
+{
+  echo "Unsupported platform."
+  write-host "Exiting." -nonewline
+  read-host
+  return
+}
+  
+## Checking for love files, downloading if not found
+if ($targetos -eq "win" -or $targetos -eq "macosx")
+{
+  if (!(test-path $LOVE_ESS))
+  {
+    echo "No LOVE installation files found.`nDownloading LOVE v$MAJOR.$MINOR.$BUILD-$LOVE_ESS..."
+    $LOVE_DOWNLOAD_URL = "$URL$LOVE_ESS.zip"
+    wget $LOVE_DOWNLOAD_URL -UseBasicParsing -OutFile "$LOVE_ESS.zip"  > $null
+    
+    echo "Extracting..."
+    [IO.Compression.ZipFile]::ExtractToDirectory("$LOVE_ESS.zip", "temp")
+    
+    rm -r "$LOVE_ESS.zip"
+    mv temp\love* $LOVE_ESS
+    rm -r temp
+  }
+}
+elseif ($targetos -eq "linux")
+{
+  ## TODO: download appropriate linux files
+}
 
+## Performing platform specific build
+if ($targetos -eq "win")
+{
   ## Merging the love executable with the love game
   cmd /c "copy /b $LOVE_ESS\love.exe + $PROJ_NAME.love $OUT_PRODUCT" > $null
 
   ## Copying libraries
   cp "$LOVE_ESS\*.dll" $BIN_DIR
 }
-elseif ($targetos -eq "mac")
+elseif ($targetos -eq "macosx")
 {
-  while (!$COM_NAME)
-  {
-    $COM_NAME = read-host "Enter a company name"
-  }
-  $LOVE_ESS = "macosx"
-  $OUT_PRODUCT = "$BIN_DIR\$PROJ_NAME.app"
-
   ## Copying app data to bin directory
-  cp -r "$LOVE_ESS\love.app" $OUT_PRODUCT
+  cp -r "$LOVE_ESS" $OUT_PRODUCT
   cp -r "$PROJ_NAME.love" "$OUT_PRODUCT\Contents\Resources\"
 
   ## Modifying Info.plist
@@ -200,22 +247,9 @@ elseif ($targetos -eq "mac")
 }
 elseif ($targetos -eq "linux")
 {
-  $LOVE_ESS = "linux"
-  $OUT_PRODUCT = "$BIN_DIR\$PROJ_NAME"
-
-  ## Not for linux you dough head
-  ## Merging the love executable with the love game
-  #cmd /c "copy /b $LOVE_ESS\love.exe + $PROJ_NAME.love $OUT_PRODUCT" > $null
-
-  ## Temp linux fix
+  ## TODO: make linux deb package
+  
   cp "$PROJ_NAME.love" $BIN_DIR
-}
-else
-{
-  echo "Unsupported platform."
-  write-host "Exiting." -nonewline
-  read-host
-  return
 }
 
 ## Removing the love/zip file
