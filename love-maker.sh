@@ -5,6 +5,12 @@
 ## This file is intended for cross-platform use, so long as the
 ## system is capable of running shell scripts.
 
+## LOVE version - potentially read through config file and/or retrieved online
+MAJOR=0
+MINOR=9
+BUILD=2
+URL=https://bitbucket.org/rude/love/downloads/
+
 ## Get architecture
 os=""
 arch=$(uname -m)
@@ -48,8 +54,8 @@ if [ ! -z $choice ]; then
     arch="x86"
     echo "Building distribution for Windows 32-bit."
   elif [ $choice == "3" ]; then
-    os="mac"
-    arch="x86_64"
+    os="macosx"
+    arch="x64"
     echo "Building distribution for Mac OS X."
   elif [ $choice == "4" ]; then
     os="linux"
@@ -121,30 +127,82 @@ else
   zip -9 -q -r $PROJ_NAME.love $SRC_DIR/*
 fi
 
-## Performing platform specific operations
+## Setting platform specific names
 if [ $os == "win" ]; then
   LOVE_ESS=
   if [ $arch == "x86_64" ]; then
-    LOVE_ESS=win64
+    LOVE_ESS=love-$MAJOR.$MINOR.$BUILD-win64
   else
-    LOVE_ESS=win32
+    LOVE_ESS=love-$MAJOR.$MINOR.$BUILD-win32
   fi
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME.exe
-
-  cat $LOVE_ESS/love.exe $PROJ_NAME.love > $OUT_PRODUCT
-
-  ## Copying dll files
-  cp $LOVE_ESS/*.dll $BIN_DIR
-elif [ $os == "mac" ]; then
+elif [ $os == "macosx" ]; then
   COM_NAME=""
   while [ -z $COM_NAME ]; do
     read -p "Enter a company name: " COM_NAME
   done
-  LOVE_ESS=macosx
+  LOVE_ESS=love-$MAJOR.$MINOR.$BUILD-macosx-x64
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME.app
+elif [ $os == "linux" ]; then
+  ## TODO: change for the sake of downloading the proper linux files
+  LOVE_ESS=linux
+  OUT_PRODUCT=$BIN_DIR/$PROJ_NAME
+else
+  ## Copying love/zip file
+  cp $PROJ_NAME.love $BIN_DIR
 
+  ## Removing the love/zip file
+  rm $PROJ_NAME.love
+
+  ## Copying license
+  cp license.txt $BIN_DIR
+
+  echo "Unsupported platform."
+  echo "Exiting."
+  read
+  exit
+fi
+
+## Checking for love files, downloading if not found
+if [ $os == "win" ] || [ $os == "macosx" ]; then
+  if [ ! -e $LOVE_ESS ]; then
+    echo "No LOVE installation files found."
+    echo "Downloading $LOVE_ESS..."
+    LOVE_DOWNLOAD_URL=$URL$LOVE_ESS.zip
+    if [ $myos == "win" ]; then
+      powershell.exe -nologo -noprofile -command "& { wget $LOVE_DOWNLOAD_URL -UseBasicParsing -OutFile $LOVE_ESS.zip; }"
+    else
+      wget $LOVE_DOWNLOAD_URL
+    fi
+    
+    echo "Extracting..."
+    if [ $myos == "win" ]; then
+      powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('$LOVE_ESS.zip', 'temp') }"
+    else
+      unzip $LOVE_ESS.zip -d temp
+    fi
+    
+    rm -rf "$LOVE_ESS.zip"
+    mv temp/love* $LOVE_ESS
+    rm -rf temp
+  fi
+else
+  if [ $os == "linux" ]; then
+    ## TODO: download appropriate linux files
+    echo "Skip"
+  fi
+fi
+
+## Performing platform specific build
+if [ $os == "win" ]; then
+  ## Merging the love executable with the love game
+  cat $LOVE_ESS/love.exe $PROJ_NAME.love > $OUT_PRODUCT
+
+  ## Copying dll files
+  cp $LOVE_ESS/*.dll $BIN_DIR
+elif [ $os == "macosx" ]; then
   ## Copying app data to bin directory
-  cp -r $LOVE_ESS/love.app $OUT_PRODUCT
+  cp -r $LOVE_ESS $OUT_PRODUCT
   cp -r $PROJ_NAME.love $OUT_PRODUCT/Contents/Resources/
 
   ## Modifying Info.plist
@@ -164,19 +222,9 @@ elif [ $os == "mac" ]; then
   TEMP=`cat $INFOPLIST`
   echo "${TEMP%%'CUTHERE'*}" > $INFOPLIST
 elif [ $os == "linux" ]; then
-  LOVE_ESS=linux
-  OUT_PRODUCT=$BIN_DIR/$PROJ_NAME
-
-  ## Not for linux you dough head
-  #cat $LOVE_ESS/love.exe $PROJ_NAME.love > $OUT_PRODUCT
-
-  ## Temp linux fix
+  ## TODO: make linux deb package
+  
   cp $PROJ_NAME.love $BIN_DIR
-else
-  echo "Unsupported platform."
-  echo "Exiting."
-  read
-  exit
 fi
 
 ## Removing the love/zip file

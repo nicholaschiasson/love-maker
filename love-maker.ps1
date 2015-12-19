@@ -182,6 +182,15 @@ elseif ($targetos -eq "linux")
 }
 else
 {
+  ## Copying love/zip file
+  cp "$PROJ_NAME.love" $BIN_DIR
+
+  ## Removing the love/zip file
+  rm "$PROJ_NAME.love"
+
+  ## Copying license
+  cp license.txt $BIN_DIR
+  
   echo "Unsupported platform."
   write-host "Exiting." -nonewline
   read-host
@@ -193,9 +202,9 @@ if ($targetos -eq "win" -or $targetos -eq "macosx")
 {
   if (!(test-path $LOVE_ESS))
   {
-    echo "No LOVE installation files found.`nDownloading LOVE v$MAJOR.$MINOR.$BUILD-$LOVE_ESS..."
+    echo "No LOVE installation files found.`nDownloading $LOVE_ESS..."
     $LOVE_DOWNLOAD_URL = "$URL$LOVE_ESS.zip"
-    wget $LOVE_DOWNLOAD_URL -UseBasicParsing -OutFile "$LOVE_ESS.zip"  > $null
+    wget $LOVE_DOWNLOAD_URL -UseBasicParsing -OutFile "$LOVE_ESS.zip" > $null
     
     echo "Extracting..."
     [IO.Compression.ZipFile]::ExtractToDirectory("$LOVE_ESS.zip", "temp")
