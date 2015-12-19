@@ -90,19 +90,19 @@ $currentPath = [System.Environment]::CurrentDirectory
 if ($currentPath)
 {
   $parentPath = [System.IO.Path]::GetDirectoryName($currentPath)
-  $currentDir = $currentPath.Replace($parentPath + "\", "")
+  $currentDir = $currentPath.Replace("$parentPath\", "")
 }
 
 if ($parentPath)
 {
   $grandParentPath = [System.IO.Path]::GetDirectoryName($parentPath)
-  $parentDir = $parentPath.Replace($grandParentPath + "\", "")
+  $parentDir = $parentPath.Replace("$grandParentPath\", "")
 }
 
 $PROJ_ROOT = ".."
-$PROJ_NAME = $parentDir
-$SRC_DIR = $PROJ_ROOT + "\src"
-$BIN_DIR = $PROJ_ROOT + "\bin\" + $targetos + "-" + $arch
+$PROJ_NAME = "$parentDir"
+$SRC_DIR = "$PROJ_ROOT\src"
+$BIN_DIR = "$PROJ_ROOT\bin\$targetos-$arch"
 
 ## If a bin directory for the target platform exists, ask to either update or clean.
 if (test-path -path $BIN_DIR)
@@ -141,15 +141,15 @@ if ($targetos -eq "win")
   {
     $LOVE_ESS = "win32"
   }
-  $OUT_PRODUCT = $BIN_DIR + "\" + $PROJ_NAME + ".exe"
+  $OUT_PRODUCT = "$BIN_DIR\$PROJ_NAME.exe"
 
   ## Making the Project zip/love file
-  if (test-path ($PROJ_NAME + ".love"))
+  if (test-path "$PROJ_NAME.love")
   {
-    rm ($PROJ_NAME + ".love")
+    rm "$PROJ_NAME.love"
   }
   Add-Type -A 'System.IO.Compression.FileSystem'
-  [IO.Compression.ZipFile]::CreateFromDirectory($SRC_DIR + "\", $PROJ_NAME + ".love")
+  [IO.Compression.ZipFile]::CreateFromDirectory("$SRC_DIR\", "$PROJ_NAME.love")
 
   ## Making the binaries directory
   if (!(test-path -path $BIN_DIR))
@@ -167,27 +167,69 @@ if ($targetos -eq "win")
   cmd /c "copy /b $LOVE_ESS\love.exe + $PROJ_NAME.love $OUT_PRODUCT" > $null
 
   ## Copying libraries
-  cp ($LOVE_ESS + "\*.dll") $BIN_DIR
+  cp "$LOVE_ESS\*.dll" $BIN_DIR
 }
-#######################################################
 elseif ($targetos -eq "mac")
 {
+  while (!$COM_NAME)
+  {
+    $COM_NAME = read-host "Enter a company name"
+  }
+  $LOVE_ESS = "macosx"
+  $OUT_PRODUCT = "$BIN_DIR\$PROJ_NAME.app"
+
+  ## Making the Project zip
+  if (test-path "$PROJ_NAME.love")
+  {
+    rm "$PROJ_NAME.love"
+  }
+  Add-Type -A 'System.IO.Compression.FileSystem'
+  [IO.Compression.ZipFile]::CreateFromDirectory("$SRC_DIR\", "$PROJ_NAME.love")
+
+  ## Making the binaries directory
+  if (!(test-path -path $BIN_DIR))
+  {
+    new-item -itemtype directory -path $BIN_DIR > $null
+  }
+
+  ## Copying app data to bin directory
+  cp -r "$LOVE_ESS\love.app" $OUT_PRODUCT
+  cp -r "$PROJ_NAME.love" "$OUT_PRODUCT\Contents\Resources\"
+
+  ## Modifying Info.plist
+  $INFOPLIST = "$OUT_PRODUCT\Contents\Info.plist"
+  $INFOPLISTCONTENT = Get-Content -raw $INFOPLIST
+
+  $OLDBIDENT = "<string>org.love2d.love</string>"
+  $NEWBIDENT = "<string>com.$COM_NAME.$PROJ_NAME</string>"
+  $INFOPLISTCONTENT = $INFOPLISTCONTENT.replace($OLDBIDENT, $NEWBIDENT)
+
+  $OLDBNAME = "<string>LÖVE</string>"
+  $NEWBNAME = "<string>$PROJ_NAME</string>"
+  $INFOPLISTCONTENT = $INFOPLISTCONTENT.replace($OLDBNAME, $NEWBNAME)
+
+  $TOREMOVE = "`t<key>UTExportedTypeDeclarations</key>"
+  $ENDFILE = "</dict>`n</plist>CUTHERE`n"
+  $INFOPLISTCONTENT = $INFOPLISTCONTENT.replace($TOREMOVE, $ENDFILE)
+  
+  $INFOPLISTCONTENT = $INFOPLISTCONTENT.substring(0, $INFOPLISTCONTENT.indexof("CUTHERE"))
+  
+  Set-Content $INFOPLIST $INFOPLISTCONTENT
 }
-#######################################################
 elseif ($targetos -eq "linux")
 {
   $LOVE_ESS = "linux"
-  $OUT_PRODUCT = $BIN_DIR + "\" + $PROJ_NAME
+  $OUT_PRODUCT = "$BIN_DIR\$PROJ_NAME"
 
-  # Making the Project zip
-  if (test-path ($PROJ_NAME + ".love"))
+  ## Making the Project zip
+  if (test-path "$PROJ_NAME.love")
   {
-    rm ($PROJ_NAME + ".love")
+    rm "$PROJ_NAME.love"
   }
   Add-Type -A 'System.IO.Compression.FileSystem'
-  [IO.Compression.ZipFile]::CreateFromDirectory($SRC_DIR + "\", $PROJ_NAME + ".love")
+  [IO.Compression.ZipFile]::CreateFromDirectory("$SRC_DIR\", "$PROJ_NAME.love")
 
-  # Making the binaries directory
+  ## Making the binaries directory
   if (!(test-path -path $BIN_DIR))
   {
     new-item -itemtype directory -path $BIN_DIR > $null
@@ -204,7 +246,7 @@ elseif ($targetos -eq "linux")
   #cmd /c "copy /b $LOVE_ESS\love.exe + $PROJ_NAME.love $OUT_PRODUCT" > $null
 
   ## Temp linux fix
-  cp ($PROJ_NAME + ".love") $BIN_DIR
+  cp "$PROJ_NAME.love" $BIN_DIR
 }
 else
 {
@@ -215,7 +257,7 @@ else
 }
 
 ## Removing the love/zip file
-rm ($PROJ_NAME + ".love")
+rm "$PROJ_NAME.love"
 
 ## Copying license
 cp license.txt $BIN_DIR

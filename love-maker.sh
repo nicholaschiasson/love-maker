@@ -105,7 +105,7 @@ if [ $os == "win" ]; then
   fi
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME.exe
 
-  # Making the Project zip/love file
+  ## Making the Project zip/love file
   if [ -e $PROJ_NAME.love ]; then
     rm -f $PROJ_NAME.love
   fi
@@ -115,7 +115,7 @@ if [ $os == "win" ]; then
     zip -9 -q -r $PROJ_NAME.love $SRC_DIR/*
   fi
 
-  # Making the binaries directory
+  ## Making the binaries directory
   ARR=$(echo $BIN_DIR | tr "/" "\n")
   CURR_DIR=
   for i in $ARR
@@ -126,14 +126,14 @@ if [ $os == "win" ]; then
     fi
   done
 
-  # Making the executable
+  ## Making the executable
   if [ ! -e $OUT_PRODUCT ]; then
     touch $OUT_PRODUCT
   fi
 
   cat $LOVE_ESS/love.exe $PROJ_NAME.love > $OUT_PRODUCT
 
-  # Copying dll files
+  ## Copying dll files
   cp $LOVE_ESS/*.dll $BIN_DIR
 elif [ $os == "mac" ]; then
   COM_NAME=""
@@ -143,7 +143,7 @@ elif [ $os == "mac" ]; then
   LOVE_ESS=macosx
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME.app
 
-  # Making the Project zip
+  ## Making the Project zip
   if [ -e $PROJ_NAME.love ]; then
     rm -f $PROJ_NAME.love
   fi
@@ -153,7 +153,7 @@ elif [ $os == "mac" ]; then
     zip -9 -q -r $PROJ_NAME.love $SRC_DIR/*
   fi
 
-  # Making the binaries directory
+  ## Making the binaries directory
   ARR=$(echo $BIN_DIR | tr "/" "\n")
   CURR_DIR=
   for i in $ARR
@@ -164,9 +164,11 @@ elif [ $os == "mac" ]; then
     fi
   done
 
+  ## Copying app data to bin directory
   cp -r $LOVE_ESS/love.app $OUT_PRODUCT
   cp -r $PROJ_NAME.love $OUT_PRODUCT/Contents/Resources/
 
+  ## Modifying Info.plist
   INFOPLIST=$OUT_PRODUCT/Contents/Info.plist
 
   OLDBIDENT="<string>org.love2d.love<\/string>"
@@ -186,7 +188,7 @@ elif [ $os == "linux" ]; then
   LOVE_ESS=linux
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME
 
-  # Making the Project zip
+  ## Making the Project zip
   if [ -e $PROJ_NAME.love ]; then
     rm -f $PROJ_NAME.love
   fi
@@ -196,7 +198,7 @@ elif [ $os == "linux" ]; then
     zip -9 -q -r $PROJ_NAME.love $SRC_DIR/*
   fi
 
-  # Making the binaries directory
+  ## Making the binaries directory
   ARR=$(echo $BIN_DIR | tr "/" "\n")
   CURR_DIR=
   for i in $ARR
@@ -208,7 +210,7 @@ elif [ $os == "linux" ]; then
   done
 
 ## Not for linux you dough head
-  # Making the executable
+  ## Making the executable
 #  if [ ! -e $OUT_PRODUCT ]; then
 #    touch $OUT_PRODUCT
 #  fi
