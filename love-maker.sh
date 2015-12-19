@@ -5,6 +5,7 @@
 ## This file is intended for cross-platform use, so long as the
 ## system is capable of running shell scripts.
 
+## Get architecture
 os=""
 arch=$(uname -m)
 
@@ -30,6 +31,7 @@ echo "  (3) Mac OS X"
 echo "  (4) Linux"
 echo "  (Default) Current Platform"
 
+## Ask for the target platform
 choice="-1"
 while [ ! -z $choice ] && [ $choice != "0" ] && [ $choice != "1" ] &&
   [ $choice != "2" ] && [ $choice != "3" ] && [ $choice != "4" ]; do
@@ -62,7 +64,7 @@ echo
 
 PATH_ARR=$(echo $(pwd) | tr "/" "\n")
 
-# Finding the directory name for ../
+## Finding the directory name for ../
 p1=
 p2=
 for i in $PATH_ARR
@@ -76,6 +78,7 @@ PROJ_NAME=$p2
 SRC_DIR=$PROJ_ROOT/src
 BIN_DIR=$PROJ_ROOT/bin/$os-$arch
 
+## If a bin directory for the target platform exists, ask to either update or clean.
 if [ -e $BIN_DIR ]; then
   choice="-1"
   echo "A distribution for this platform already exists."
@@ -87,6 +90,7 @@ if [ -e $BIN_DIR ]; then
   fi
 fi
 
+## Ask if we should still go forward with the build.
 choice="-1"
 echo "Build will start."
 while [ ! -z $choice ] && [ $choice != "y" ] && [ $choice != "n" ]; do
@@ -96,6 +100,28 @@ if [ ! -z $choice ] && [ $choice == "n" ]; then
   exit
 fi
 
+## Making the binaries directory
+ARR=$(echo $BIN_DIR | tr "/" "\n")
+CURR_DIR=
+for i in $ARR
+do
+  CURR_DIR=$CURR_DIR$i/
+  if [ ! -e $CURR_DIR ]; then
+    mkdir $CURR_DIR
+  fi
+done
+
+## Making the Project zip/love file
+if [ -e $PROJ_NAME.love ]; then
+  rm -f $PROJ_NAME.love
+fi
+if [ $myos == "win" ]; then
+  powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('$SRC_DIR/', '$PROJ_NAME.love'); }"
+else
+  zip -9 -q -r $PROJ_NAME.love $SRC_DIR/*
+fi
+
+## Performing platform specific operations
 if [ $os == "win" ]; then
   LOVE_ESS=
   if [ $arch == "x86_64" ]; then
@@ -104,32 +130,6 @@ if [ $os == "win" ]; then
     LOVE_ESS=win32
   fi
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME.exe
-
-  ## Making the Project zip/love file
-  if [ -e $PROJ_NAME.love ]; then
-    rm -f $PROJ_NAME.love
-  fi
-  if [ $myos == "win" ]; then
-    powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('$SRC_DIR/', '$PROJ_NAME.love'); }"
-  else
-    zip -9 -q -r $PROJ_NAME.love $SRC_DIR/*
-  fi
-
-  ## Making the binaries directory
-  ARR=$(echo $BIN_DIR | tr "/" "\n")
-  CURR_DIR=
-  for i in $ARR
-  do
-    CURR_DIR=$CURR_DIR$i/
-    if [ ! -e $CURR_DIR ]; then
-      mkdir $CURR_DIR
-    fi
-  done
-
-  ## Making the executable
-  if [ ! -e $OUT_PRODUCT ]; then
-    touch $OUT_PRODUCT
-  fi
 
   cat $LOVE_ESS/love.exe $PROJ_NAME.love > $OUT_PRODUCT
 
@@ -142,27 +142,6 @@ elif [ $os == "mac" ]; then
   done
   LOVE_ESS=macosx
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME.app
-
-  ## Making the Project zip
-  if [ -e $PROJ_NAME.love ]; then
-    rm -f $PROJ_NAME.love
-  fi
-  if [ $myos == "win" ]; then
-    powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('$SRC_DIR/', '$PROJ_NAME.love'); }"
-  else
-    zip -9 -q -r $PROJ_NAME.love $SRC_DIR/*
-  fi
-
-  ## Making the binaries directory
-  ARR=$(echo $BIN_DIR | tr "/" "\n")
-  CURR_DIR=
-  for i in $ARR
-  do
-    CURR_DIR=$CURR_DIR$i/
-    if [ ! -e $CURR_DIR ]; then
-      mkdir $CURR_DIR
-    fi
-  done
 
   ## Copying app data to bin directory
   cp -r $LOVE_ESS/love.app $OUT_PRODUCT
@@ -188,36 +167,10 @@ elif [ $os == "linux" ]; then
   LOVE_ESS=linux
   OUT_PRODUCT=$BIN_DIR/$PROJ_NAME
 
-  ## Making the Project zip
-  if [ -e $PROJ_NAME.love ]; then
-    rm -f $PROJ_NAME.love
-  fi
-  if [ $myos == "win" ]; then
-    powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('$SRC_DIR/', '$PROJ_NAME.love'); }"
-  else
-    zip -9 -q -r $PROJ_NAME.love $SRC_DIR/*
-  fi
+  ## Not for linux you dough head
+  #cat $LOVE_ESS/love.exe $PROJ_NAME.love > $OUT_PRODUCT
 
-  ## Making the binaries directory
-  ARR=$(echo $BIN_DIR | tr "/" "\n")
-  CURR_DIR=
-  for i in $ARR
-  do
-    CURR_DIR=$CURR_DIR$i/
-    if [ ! -e $CURR_DIR ]; then
-      mkdir $CURR_DIR
-    fi
-  done
-
-## Not for linux you dough head
-  ## Making the executable
-#  if [ ! -e $OUT_PRODUCT ]; then
-#    touch $OUT_PRODUCT
-#  fi
-
-#  cat $LOVE_ESS/love.exe $PROJ_NAME.love > $OUT_PRODUCT
-
-## Temp linux fix
+  ## Temp linux fix
   cp $PROJ_NAME.love $BIN_DIR
 else
   echo "Unsupported platform."
@@ -226,10 +179,10 @@ else
   exit
 fi
 
-# Removing the love/zip file
+## Removing the love/zip file
 rm $PROJ_NAME.love
 
-# Copying license
+## Copying license
 cp license.txt $BIN_DIR
 
 echo

@@ -86,6 +86,7 @@ else
 }
 write-host
 
+## Finding the directory name for ../
 $currentPath = [System.Environment]::CurrentDirectory
 if ($currentPath)
 {
@@ -203,7 +204,6 @@ elseif ($targetos -eq "linux")
   $OUT_PRODUCT = "$BIN_DIR\$PROJ_NAME"
 
   ## Not for linux you dough head
-
   ## Merging the love executable with the love game
   #cmd /c "copy /b $LOVE_ESS\love.exe + $PROJ_NAME.love $OUT_PRODUCT" > $null
 
