@@ -154,7 +154,7 @@ if ($targetos -eq "win")
   ## Making the binaries directory
   if (!(test-path -path $BIN_DIR))
   {
-      new-item -itemtype directory -path $BIN_DIR > $null
+    new-item -itemtype directory -path $BIN_DIR > $null
   }
 
   ## Making the executable
@@ -173,10 +173,39 @@ if ($targetos -eq "win")
 elseif ($targetos -eq "mac")
 {
 }
+#######################################################
 elseif ($targetos -eq "linux")
 {
+  $LOVE_ESS = "linux"
+  $OUT_PRODUCT = $BIN_DIR + "\" + $PROJ_NAME
+
+  # Making the Project zip
+  if (test-path ($PROJ_NAME + ".love"))
+  {
+    rm ($PROJ_NAME + ".love")
+  }
+  Add-Type -A 'System.IO.Compression.FileSystem'
+  [IO.Compression.ZipFile]::CreateFromDirectory($SRC_DIR + "\", $PROJ_NAME + ".love")
+
+  # Making the binaries directory
+  if (!(test-path -path $BIN_DIR))
+  {
+    new-item -itemtype directory -path $BIN_DIR > $null
+  }
+
+  ## Not for linux you dough head
+  ## Making the executable
+  #if (!(test-path $OUT_PRODUCT))
+  #{
+  #  new-item -force $OUT_PRODUCT > $null
+  #}
+
+  ## Merging the love executable with the love game
+  #cmd /c "copy /b $LOVE_ESS\love.exe + $PROJ_NAME.love $OUT_PRODUCT" > $null
+
+  ## Temp linux fix
+  cp ($PROJ_NAME + ".love") $BIN_DIR
 }
-#######################################################
 else
 {
   echo "Unsupported platform."
