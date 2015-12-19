@@ -5,6 +5,12 @@
 ## This file is intended for cross-platform use, so long as the
 ## system is capable of running shell scripts.
 
+## Miscellaneous variables
+DOWNLOAD_DIR=love-downloads
+if [ ! -e $DOWNLOAD_DIR ]; then
+  mkdir $DOWNLOAD_DIR
+fi
+
 ## LOVE version - potentially read through config file and/or retrieved online
 MAJOR=0
 MINOR=9
@@ -165,7 +171,7 @@ fi
 
 ## Checking for love files, downloading if not found
 if [ $os == "win" ] || [ $os == "macosx" ]; then
-  if [ ! -e $LOVE_ESS ]; then
+  if [ ! -e $DOWNLOAD_DIR/$LOVE_ESS ]; then
     echo "No LOVE installation files found."
     echo "Downloading $LOVE_ESS..."
     LOVE_DOWNLOAD_URL=$URL$LOVE_ESS.zip
@@ -183,7 +189,7 @@ if [ $os == "win" ] || [ $os == "macosx" ]; then
     fi
     
     rm -rf "$LOVE_ESS.zip"
-    mv temp/love* $LOVE_ESS
+    mv temp/love* $DOWNLOAD_DIR/$LOVE_ESS
     rm -rf temp
   fi
 else
@@ -196,13 +202,13 @@ fi
 ## Performing platform specific build
 if [ $os == "win" ]; then
   ## Merging the love executable with the love game
-  cat $LOVE_ESS/love.exe $PROJ_NAME.love > $OUT_PRODUCT
+  cat $DOWNLOAD_DIR/$LOVE_ESS/love.exe $PROJ_NAME.love > $OUT_PRODUCT
 
   ## Copying dll files
-  cp $LOVE_ESS/*.dll $BIN_DIR
+  cp $DOWNLOAD_DIR/$LOVE_ESS/*.dll $BIN_DIR
 elif [ $os == "macosx" ]; then
   ## Copying app data to bin directory
-  cp -r $LOVE_ESS $OUT_PRODUCT
+  cp -r $DOWNLOAD_DIR/$LOVE_ESS $OUT_PRODUCT
   cp -r $PROJ_NAME.love $OUT_PRODUCT/Contents/Resources/
 
   ## Modifying Info.plist

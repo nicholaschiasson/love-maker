@@ -2,6 +2,13 @@
 
 ## This file is only intended for use on Windows systems.
 
+## Miscellaneous variables
+$DOWNLOAD_DIR = "love-downloads"
+if (!(test-path $DOWNLOAD_DIR))
+{
+  new-item -itemtype directory -path $DOWNLOAD_DIR > $null
+}
+
 ## LOVE version - potentially read through config file and/or retrieved online
 $MAJOR = 0
 $MINOR = 9
@@ -200,7 +207,7 @@ else
 ## Checking for love files, downloading if not found
 if ($targetos -eq "win" -or $targetos -eq "macosx")
 {
-  if (!(test-path $LOVE_ESS))
+  if (!(test-path "$DOWNLOAD_DIR\$LOVE_ESS"))
   {
     echo "No LOVE installation files found.`nDownloading $LOVE_ESS..."
     $LOVE_DOWNLOAD_URL = "$URL$LOVE_ESS.zip"
@@ -210,7 +217,7 @@ if ($targetos -eq "win" -or $targetos -eq "macosx")
     [IO.Compression.ZipFile]::ExtractToDirectory("$LOVE_ESS.zip", "temp")
     
     rm -r "$LOVE_ESS.zip"
-    mv temp\love* $LOVE_ESS
+    mv temp\love* "$DOWNLOAD_DIR\$LOVE_ESS"
     rm -r temp
   }
 }
@@ -223,15 +230,15 @@ elseif ($targetos -eq "linux")
 if ($targetos -eq "win")
 {
   ## Merging the love executable with the love game
-  cmd /c "copy /b $LOVE_ESS\love.exe + $PROJ_NAME.love $OUT_PRODUCT" > $null
+  cmd /c "copy /b $DOWNLOAD_DIR\$LOVE_ESS\love.exe + $PROJ_NAME.love $OUT_PRODUCT" > $null
 
   ## Copying libraries
-  cp "$LOVE_ESS\*.dll" $BIN_DIR
+  cp "$DOWNLOAD_DIR\$LOVE_ESS\*.dll" $BIN_DIR
 }
 elseif ($targetos -eq "macosx")
 {
   ## Copying app data to bin directory
-  cp -r "$LOVE_ESS" $OUT_PRODUCT
+  cp -r "$DOWNLOAD_DIR\$LOVE_ESS" $OUT_PRODUCT
   cp -r "$PROJ_NAME.love" "$OUT_PRODUCT\Contents\Resources\"
 
   ## Modifying Info.plist
