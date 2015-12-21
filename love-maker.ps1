@@ -2,6 +2,38 @@
 
 ## This file is only intended for use on Windows systems.
 
+## Functions
+function GetConfigProperty
+{
+  param([string]$propertyName)
+  $propName = $propertyName + ":"
+  $propertyLine = [string](get-content .\love-maker.config | select-string -pattern $propName)
+  if ($propertyLine)
+  {
+    $propertyLine = $propertyLine.trim()
+    if ($propertyLine.startsWith($propName))
+    {
+      $propertyValue = $propertyLine.replace($propName, "")
+      if ($propertyValue)
+      {
+        $propertyValue
+      }
+      else
+      {
+        $null
+      }
+    }
+    else
+    {
+      $null
+    }
+  }
+  else
+  {
+    $null
+  }
+}
+
 ## Miscellaneous variables
 $DOWNLOAD_DIR = "love-downloads"
 if (!(test-path $DOWNLOAD_DIR))
@@ -10,9 +42,21 @@ if (!(test-path $DOWNLOAD_DIR))
 }
 
 ## LOVE version - potentially read through config file and/or retrieved online
-$MAJOR = 0
-$MINOR = 9
-$BUILD = 2
+$MAJOR = GetConfigProperty "VERSION_MAJOR"
+if (!$MAJOR)
+{
+  $MAJOR = 0
+}
+$MINOR = GetConfigProperty "VERSION_MINOR"
+if (!$MINOR)
+{
+  $MINOR = 9
+}
+$BUILD = GetConfigProperty "VERSION_BUILD"
+if (!$BUILD)
+{
+  $BUILD = 2
+}
 $URL = "https://bitbucket.org/rude/love/downloads/"
 
 ## Get architecture

@@ -5,6 +5,32 @@
 ## This file is intended for cross-platform use, so long as the
 ## system is capable of running shell scripts.
 
+## Functions
+function GetConfigProperty
+{
+  if [ ! -z $1 ]; then
+    propName=$1:
+    propertyLine=`grep -a $propName love-maker.config`
+    if [ ! -z "$propertyLine" ]; then
+      propertyLine=${propertyLine//[[:blank:]]/}
+      if [ ${propertyLine:0:${#propName}} == "$propName" ]; then
+        propertyValue=${propertyLine:${#propName}}
+        if [ ! -z "$propertyValue" ]; then
+          echo $propertyValue
+        else
+          echo
+        fi
+      else
+        echo
+      fi
+    else
+      echo
+    fi
+  else
+    echo
+  fi
+}
+
 ## Miscellaneous variables
 DOWNLOAD_DIR=love-downloads
 if [ ! -e $DOWNLOAD_DIR ]; then
@@ -12,9 +38,18 @@ if [ ! -e $DOWNLOAD_DIR ]; then
 fi
 
 ## LOVE version - potentially read through config file and/or retrieved online
-MAJOR=0
-MINOR=9
-BUILD=2
+MAJOR=$(GetConfigProperty VERSION_MAJOR)
+if [ -z "$MAJOR" ]; then
+  MAJOR=0
+fi
+MINOR=$(GetConfigProperty VERSION_MINOR)
+if [ -z "$MINOR" ]; then
+  MINOR=9
+fi
+BUILD=$(GetConfigProperty VERSION_BUILD)
+if [ -z "$BUILD" ]; then
+  BUILD=2
+fi
 URL=https://bitbucket.org/rude/love/downloads/
 
 ## Get architecture
