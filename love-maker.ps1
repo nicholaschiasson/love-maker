@@ -189,9 +189,22 @@ if ($parentPath)
 }
 
 $PROJ_ROOT = ".."
-$PROJ_NAME = "$parentDir"
-$SRC_DIR = "$PROJ_ROOT\src"
-$BIN_DIR = "$PROJ_ROOT\bin\$targetos-$arch"
+$PROJ_NAME = GetConfigProperty "PROJECT_NAME"
+if (!$PROJ_NAME)
+{
+  $PROJ_NAME = "$parentDir"
+}
+$SRC_DIR = GetConfigProperty "SOURCE_DIRECTORY"
+if (!$SRC_DIR)
+{
+  $SRC_DIR = "$PROJ_ROOT\src"
+}
+$BIN_DIR = GetConfigProperty "BINARY_DIRECTORY"
+if (!$BIN_DIR)
+{
+  $BIN_DIR = "$PROJ_ROOT\bin"
+}
+$BIN_DIR = "$BIN_DIR\$targetos-$arch"
 
 ## If a bin directory for the target platform exists, ask to either update or clean.
 if (test-path -path $BIN_DIR)
