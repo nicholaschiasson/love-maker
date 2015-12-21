@@ -41,18 +41,48 @@ if (!(test-path $DOWNLOAD_DIR))
   new-item -itemtype directory -path $DOWNLOAD_DIR > $null
 }
 
-## LOVE version - potentially read through config file and/or retrieved online
+## Checking config file for version of LOVE to use
 $MAJOR = GetConfigProperty "VERSION_MAJOR"
+$MINOR = GetConfigProperty "VERSION_MINOR"
+$BUILD = GetConfigProperty "VERSION_BUILD"
+
+## Finding the latest version of LOVE
+wget https://love2d.org/ -UseBasicParsing -OutFile lovehome.html > $null
+$LOVE_VERSION = [string](get-content .\lovehome.html | select-string -pattern "Download L")
+if ($LOVE_VERSION)
+{
+  ## Making a lot of assumptions that the line will be formatted <h2>Download LÖVE *.*.*</h2>
+  $LOVE_VERSION = $LOVE_VERSION.trim()
+  $LOVE_VERSION = $LOVE_VERSION.substring($LOVE_VERSION.indexof("Download L") + "Download LOVE ".length)
+  $LOVE_VERSION = $LOVE_VERSION.substring(0, $LOVE_VERSION.indexof("<"))
+  $LOVE_VERSION_PARTS = $LOVE_VERSION.split('.')
+  if ($LOVE_VERSION_PARTS)
+  {
+    if (!$MAJOR -and $LOVE_VERSION_PARTS[0])
+    {
+      $MAJOR = $LOVE_VERSION_PARTS[0]
+    }
+    if (!$MINOR -and $LOVE_VERSION_PARTS[1])
+    {
+      $MINOR = $LOVE_VERSION_PARTS[1]
+    }
+    if (!$BUILD -and $LOVE_VERSION_PARTS[2])
+    {
+      $BUILD = $LOVE_VERSION_PARTS[2]
+    }
+  }
+}
+rm -r lovehome.html
+
+## LOVE version to use
 if (!$MAJOR)
 {
   $MAJOR = 0
 }
-$MINOR = GetConfigProperty "VERSION_MINOR"
 if (!$MINOR)
 {
   $MINOR = 9
 }
-$BUILD = GetConfigProperty "VERSION_BUILD"
 if (!$BUILD)
 {
   $BUILD = 2
@@ -84,7 +114,7 @@ else
   $arch = "x86"
 }
 
-$OSTYPE = (Get-WmiObject Win32_OperatingSystem).Caption
+$OSTYPE = (get-wmiobject Win32_OperatingSystem).Caption
 $targetos = "win"
 $myos = "win"
 
@@ -287,7 +317,7 @@ elseif ($targetos -eq "macosx")
 
   ## Modifying Info.plist
   $INFOPLIST = "$OUT_PRODUCT\Contents\Info.plist"
-  $INFOPLISTCONTENT = Get-Content -raw $INFOPLIST
+  $INFOPLISTCONTENT = get-content -raw $INFOPLIST
 
   $OLDBIDENT = "<string>org.love2d.love</string>"
   $NEWBIDENT = "<string>com.$COM_NAME.$PROJ_NAME</string>"
@@ -303,7 +333,7 @@ elseif ($targetos -eq "macosx")
   
   $INFOPLISTCONTENT = $INFOPLISTCONTENT.substring(0, $INFOPLISTCONTENT.indexof("CUTHERE"))
   
-  Set-Content $INFOPLIST $INFOPLISTCONTENT
+  set-content $INFOPLIST $INFOPLISTCONTENT
 }
 elseif ($targetos -eq "linux")
 {
