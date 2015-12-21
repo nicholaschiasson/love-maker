@@ -41,6 +41,35 @@ if (!(test-path $DOWNLOAD_DIR))
   new-item -itemtype directory -path $DOWNLOAD_DIR > $null
 }
 
+## Get architecture
+## Checking WMI
+#arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
+## Using .NET
+#### Possibly more reliable in case running in virtual machine or emulator
+if ([System.Environment]::Is64BitProcess)
+{
+  $arch = "64-bit"
+}
+else
+{
+  $arch = "32-bit"
+}
+
+## Purpose for this conditional is because the first method above for getting
+## the system architecture returns as a string either "64-bit" or "32-bit"
+if ($arch -eq "64-bit")
+{
+  $arch = "x86_64"
+}
+else
+{
+  $arch = "x86"
+}
+
+$OSTYPE = (get-wmiobject Win32_OperatingSystem).Caption
+$targetos = "win"
+$myos = "win"
+
 ## Checking config file for version of LOVE to use
 $MAJOR = GetConfigProperty "VERSION_MAJOR"
 $MINOR = GetConfigProperty "VERSION_MINOR"
@@ -89,35 +118,7 @@ if (!$BUILD)
 }
 $URL = "https://bitbucket.org/rude/love/downloads/"
 
-## Get architecture
-## Checking WMI
-#arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
-## Using .NET
-#### Possibly more reliable in case running in virtual machine or emulator
-if ([System.Environment]::Is64BitProcess)
-{
-  $arch = "64-bit"
-}
-else
-{
-  $arch = "32-bit"
-}
-
-## Purpose for this conditional is because the first method above for getting
-## the system architecture returns as a string either "64-bit" or "32-bit"
-if ($arch -eq "64-bit")
-{
-  $arch = "x86_64"
-}
-else
-{
-  $arch = "x86"
-}
-
-$OSTYPE = (get-wmiobject Win32_OperatingSystem).Caption
-$targetos = "win"
-$myos = "win"
-
+## Begin user interaction
 echo "OSTYPE: $OSTYPE ($myos)"
 
 echo "ARCHITECTURE: $arch"

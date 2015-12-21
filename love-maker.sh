@@ -37,21 +37,6 @@ if [ ! -e $DOWNLOAD_DIR ]; then
   mkdir $DOWNLOAD_DIR
 fi
 
-## LOVE version - potentially read through config file and/or retrieved online
-MAJOR=$(GetConfigProperty VERSION_MAJOR)
-if [ -z "$MAJOR" ]; then
-  MAJOR=0
-fi
-MINOR=$(GetConfigProperty VERSION_MINOR)
-if [ -z "$MINOR" ]; then
-  MINOR=9
-fi
-BUILD=$(GetConfigProperty VERSION_BUILD)
-if [ -z "$BUILD" ]; then
-  BUILD=2
-fi
-URL=https://bitbucket.org/rude/love/downloads/
-
 ## Get architecture
 os=""
 arch=$(uname -m)
@@ -67,6 +52,49 @@ case "$OSTYPE" in
 esac
 
 myos=$os
+
+## Checking config file for version of LOVE to use
+MAJOR=$(GetConfigProperty VERSION_MAJOR)
+MINOR=$(GetConfigProperty VERSION_MINOR)
+BUILD=$(GetConfigProperty VERSION_BUILD)
+
+## Finding the latest version of LOVE
+if [ $myos == "win" ]; then
+  powershell.exe -nologo -noprofile -command "& { wget https://love2d.org/ -UseBasicParsing -OutFile lovehome.html; }"
+else
+  wget https://love2d.org/ -o lovehome.html
+fi
+LOVE_VERSION=`grep -a "Download L" lovehome.html`
+if [ ! -z "$LOVE_VERSION" ]; then
+  ## Making a lot of assumptions that the line will be formatted <h2>Download LÖVE *.*.*</h2>
+  download_str="Download LOVE "
+  LOVE_VERSION=${LOVE_VERSION:`expr index "$LOVE_VERSION" "Download L"` + ${#download_str} - 1:`expr index "$LOVE_VERSION" "</"`}
+  if [ -z $MAJOR ]; then
+    MAJOR=${LOVE_VERSION:0:`expr index "$LOVE_VERSION" "."` - 1}
+  fi
+  LOVE_VERSION=${LOVE_VERSION:`expr index "$LOVE_VERSION" "."`}
+  if [ -z $MINOR ]; then
+    MINOR=${LOVE_VERSION:0:`expr index "$LOVE_VERSION" "."` - 1}
+  fi
+  if [ -z $BUILD ]; then
+    BUILD=${LOVE_VERSION:`expr index "$LOVE_VERSION" "."`}
+  fi
+fi
+rm -r lovehome.html
+
+## LOVE version to use
+if [ -z "$MAJOR" ]; then
+  MAJOR=0
+fi
+if [ -z "$MINOR" ]; then
+  MINOR=9
+fi
+if [ -z "$BUILD" ]; then
+  BUILD=2
+fi
+URL=https://bitbucket.org/rude/love/downloads/
+
+## Begin user interaction
 echo "OSTYPE: $OSTYPE ($os)"
 
 echo "ARCHITECTURE: $arch"
