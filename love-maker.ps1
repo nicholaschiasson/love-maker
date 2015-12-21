@@ -318,7 +318,7 @@ elseif ($targetos -eq "linux")
 if ($targetos -eq "win")
 {
   ## Merging the love executable with the love game
-  cmd /c "copy /b $DOWNLOAD_DIR\$LOVE_ESS\love.exe + $PROJ_NAME.love $OUT_PRODUCT" > $null
+  cmd /c "copy /b ""$DOWNLOAD_DIR\$LOVE_ESS\love.exe"" + ""$PROJ_NAME.love"" ""$OUT_PRODUCT""" > $null
 
   ## Copying libraries
   cp "$DOWNLOAD_DIR\$LOVE_ESS\*.dll" $BIN_DIR

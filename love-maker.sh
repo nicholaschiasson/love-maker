@@ -260,7 +260,7 @@ if [ $os == "win" ] || [ $os == "macosx" ]; then
 else
   if [ $os == "linux" ]; then
     ## TODO: download appropriate linux files
-    echo "Skip"
+    echo
   fi
 fi
 
