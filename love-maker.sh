@@ -62,7 +62,8 @@ BUILD=$(GetConfigProperty VERSION_BUILD)
 if [ $myos == "win" ]; then
   powershell.exe -nologo -noprofile -command "& { wget https://love2d.org/ -UseBasicParsing -OutFile lovehome.html; }"
 else
-  wget https://love2d.org/ -o lovehome.html
+  wget https://love2d.org/ 1> NUL 2> NUL
+  mv index.html lovehome.html
 fi
 LOVE_VERSION=`grep -a "Download L" lovehome.html`
 if [ ! -z "$LOVE_VERSION" ]; then
@@ -138,6 +139,7 @@ fi
 echo
 
 PATH_ARR=$(echo $(pwd) | tr "/" "\n")
+PATH_ARR=$(echo "$PATH_ARR" | tr " " "/")
 
 ## Finding the directory name for ../
 p1=
@@ -147,6 +149,8 @@ do
   p2=$p1
   p1=$i
 done
+p2=$(echo $p2 | tr "/" " ")
+p1=$(echo $p1 | tr "/" " ")
 
 PROJ_ROOT=..
 PROJ_NAME=$(GetConfigProperty "PROJECT_NAME")
@@ -195,7 +199,7 @@ fi
 if [ $myos == "win" ]; then
   powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('$SRC_DIR/', '$PROJ_NAME.love'); }"
 else
-  zip -9 -q -r "$PROJ_NAME.love" "$SRC_DIR/*"
+  zip -9 -q -r "$PROJ_NAME.love" "$SRC_DIR/"*
 fi
 
 ## Setting platform specific names
@@ -243,14 +247,14 @@ if [ $os == "win" ] || [ $os == "macosx" ]; then
     if [ $myos == "win" ]; then
       powershell.exe -nologo -noprofile -command "& { wget $LOVE_DOWNLOAD_URL -UseBasicParsing -OutFile $LOVE_ESS.zip; }"
     else
-      wget "$LOVE_DOWNLOAD_URL"
+      wget "$LOVE_DOWNLOAD_URL" 1> NUL 2> NUL
     fi
     
     echo "Extracting..."
     if [ $myos == "win" ]; then
       powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('$LOVE_ESS.zip', 'temp') }"
     else
-      unzip "$LOVE_ESS.zip" -d temp
+      unzip -q "$LOVE_ESS.zip" -d temp
     fi
     
     rm -rf "$LOVE_ESS.zip"
