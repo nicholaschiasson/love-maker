@@ -27,7 +27,4 @@ If you will be using these scripts for regular compiling while developing (that'
 - About the Windows scripts: I mentioned that powershell is required, but the script actually intended to be run is a batch file. There does exist a powershell script in the same directory (if you weren't observant enough to have noticed it yet), but there were some technical details which inclined me to make a batch file with the sole purpose of executing that powershell script. The powershell script actually does do all the work, but I like making things *double-clickable*. It just sits better with me that way.
 
 ###### TODO
-- Configuration file for SCR_DIR, BIN_DIR, PROJ_NAME, BUILD_MODE, and various other variables
 - Implement Linux distribution
-- Have script copy a shortcut of the script into the bin folder.
-- Don't require to include the Love2D framework in THIS project... download it on first use or something, and check for updates on each use perhaps.
