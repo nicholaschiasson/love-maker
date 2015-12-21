@@ -10,6 +10,7 @@
 set powershell_script=love-maker.ps1
 
 if exist %powershell_script% (
+  powershell.exe -nologo -noprofile -command "& { unblock-file %powershell_script%; }"
   powershell.exe -executionpolicy remotesigned -File %powershell_script%
 ) else (
   echo Powershell script "%powershell_script%" not found.
