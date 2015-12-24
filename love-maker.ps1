@@ -89,15 +89,15 @@ if ($LOVE_VERSION)
   {
     if (!$MAJOR -and $LOVE_VERSION_PARTS[0])
     {
-      $MAJOR = $LOVE_VERSION_PARTS[0]
+      $MAJOR = $LOVE_VERSION_PARTS[0].trim()
     }
     if (!$MINOR -and $LOVE_VERSION_PARTS[1])
     {
-      $MINOR = $LOVE_VERSION_PARTS[1]
+      $MINOR = $LOVE_VERSION_PARTS[1].trim()
     }
     if (!$BUILD -and $LOVE_VERSION_PARTS[2])
     {
-      $BUILD = $LOVE_VERSION_PARTS[2]
+      $BUILD = $LOVE_VERSION_PARTS[2].trim()
     }
   }
 }
@@ -110,11 +110,11 @@ if (!$MAJOR)
 }
 if (!$MINOR)
 {
-  $MINOR = 9
+  $MINOR = 0
 }
 if (!$BUILD)
 {
-  $BUILD = 2
+  $BUILD = 0
 }
 $URL = "https://bitbucket.org/rude/love/downloads/"
 
