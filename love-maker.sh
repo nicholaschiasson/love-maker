@@ -88,10 +88,10 @@ if [ -z "$MAJOR" ]; then
   MAJOR=0
 fi
 if [ -z "$MINOR" ]; then
-  MINOR=9
+  MINOR=0
 fi
 if [ -z "$BUILD" ]; then
-  BUILD=2
+  BUILD=0
 fi
 URL=https://bitbucket.org/rude/love/downloads/
 
