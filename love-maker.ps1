@@ -84,7 +84,7 @@ if ($LOVE_VERSION)
   $LOVE_VERSION = $LOVE_VERSION.trim()
   $LOVE_VERSION = $LOVE_VERSION.substring($LOVE_VERSION.indexof("Download L") + "Download LOVE ".length)
   $LOVE_VERSION = $LOVE_VERSION.substring(0, $LOVE_VERSION.indexof("<"))
-  $LOVE_VERSION_PARTS = $LOVE_VERSION.split('.')
+  $LOVE_VERSION_PARTS = $LOVE_VERSION.split(' ')[0].split('.')
   if ($LOVE_VERSION_PARTS)
   {
     if (!$MAJOR -and $LOVE_VERSION_PARTS[0])
